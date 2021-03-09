@@ -7,6 +7,8 @@ using System;
 
 public class FloorController : MonoBehaviour
 {
+    public GameObject WinText;
+
     private const int N = 4;
     private const float floorSize = 10.0f;
     private const float blockSize = floorSize / N;
@@ -20,6 +22,8 @@ public class FloorController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        WinText.SetActive(false);
+
         board = new List<List<int>>();
         int n = 0;
         for (int h = 0; h < N; h++)
@@ -51,7 +55,7 @@ public class FloorController : MonoBehaviour
 
             var block = blocks[i];
             var blockNumber = block.transform.Find("Block Number").GetComponent<TextMeshPro>();
-            blockNumber.text = num.ToString();
+            blockNumber.text = num > 0 ? num.ToString() : "";
 
             positions.Add(new Vector3(block.transform.localPosition.x, block.transform.localPosition.y, block.transform.localPosition.z));
 
@@ -145,8 +149,24 @@ public class FloorController : MonoBehaviour
     {
         var rand = new System.Random();
 
-        int h = N - 1;
-        int w = N - 1;
+        int h = -1;
+        int w = -1;
+        for (int i = 0; i < N; i++)
+        {
+            for (int j = 0; j < N; j++)
+            {
+                if (board[i][j] == 0)
+                {
+                    h = i;
+                    w = j;
+                }
+            }
+        }
+        if (h == -1 || w == -1)
+        {
+            throw new Exception("空白がありません");
+        }
+
         for (int i = 0; i < count; i++)
         {
             var nextH = rand.Next(0, N);
@@ -176,9 +196,12 @@ public class FloorController : MonoBehaviour
 
     public bool DisplayTextIfWin()
     {
-        var res = isWin();
-        Debug.Log(res);
-        return res;
+        var win = isWin();
+        if (win)
+        {
+            WinText.SetActive(true);
+        }
+        return win;
     }
     private bool isWin()
     {
