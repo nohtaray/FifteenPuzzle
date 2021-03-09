@@ -129,11 +129,11 @@ public class FloorController : MonoBehaviour
         return 0 <= n && n < N;
     }
 
-    private int aaa = 0;
+    private int swapCount = 0;
     private void swap(int fromH, int fromW, int toH, int toW)
     {
-        aaa += 1;
-        Debug.Log(string.Format("swap {4}: ({0}, {1}) -> ({2}, {3})", fromH, fromW, toH, toW, aaa));
+        swapCount += 1;
+        Debug.Log(string.Format("swap {4}: ({0}, {1}) -> ({2}, {3})", fromH, fromW, toH, toW, swapCount));
         var fromIndex = fromH * N + fromW;
         var toIndex = toH * N + toW;
         (board[fromH][fromW], board[toH][toW]) = (board[toH][toW], board[fromH][fromW]);
@@ -172,5 +172,25 @@ public class FloorController : MonoBehaviour
                 diffW = Mathf.Abs(w - nextW);
             }
         }
+    }
+
+    public bool DisplayTextIfWin()
+    {
+        var res = isWin();
+        Debug.Log(res);
+        return res;
+    }
+    private bool isWin()
+    {
+        int n = 0;
+        bool ok = true;
+        for (int i = 0; i < N; i++)
+        {
+            for (int j = 0; j < N; j++)
+            {
+                ok &= board[i][j] == (++n) % (N * N);
+            }
+        }
+        return ok;
     }
 }

@@ -70,6 +70,10 @@ public class BlockController : MonoBehaviour
 
             Debug.Log(string.Format("AttemptToMove: {0}, {1}, {2}, {3}", fromH, fromW, toH, toW));
             var res = floor.AttemptToMove(fromH, fromW, toH, toW);
+            if (res)
+            {
+                floor.DisplayTextIfWin();
+            }
         }
     }
 }
