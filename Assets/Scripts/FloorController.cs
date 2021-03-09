@@ -45,13 +45,25 @@ public class FloorController : MonoBehaviour
 
         for (int i = 0; i < blocks.Count(); i++)
         {
+            var num = (i + 1) % (N * N);
+
             var block = blocks[i];
             var blockNumber = block.transform.Find("Block Number").GetComponent<TextMeshPro>();
-            blockNumber.text = (i + 1).ToString();
+            blockNumber.text = num.ToString();
 
             positions.Add(new Vector3(block.transform.localPosition.x, block.transform.localPosition.y, block.transform.localPosition.z));
 
             block.GetComponent<BlockController>().blockIndex = i;
+
+            if (num == 0)
+            {
+                var renderer = block.GetComponent<Renderer>();
+                foreach (var material in renderer.materials)
+                {
+                    // 背景と同じ色にしておく
+                    material.color = new Color(255, 255, 255);
+                }
+            }
         }
 
         Debug.Log(transform.position);
@@ -94,5 +106,43 @@ public class FloorController : MonoBehaviour
     {
         var ret = (int)((-p.z + floorSize / 2) / blockSize);
         return Mathf.Min(N - 1, Mathf.Max(0, ret));
+    }
+
+    public bool AttemptToMove(int fromH, int fromW, int toH, int toW)
+    {
+        string s = "";
+        for (int i = 0; i < N; i++)
+        {
+            for (int j = 0; j < N; j++)
+            {
+                s += board[i][j].ToString() + ",";
+            }
+            s += "\n";
+        }
+        Debug.Log(s);
+
+        if (!ok(fromH) || !ok(fromW) || !ok(toH) || !ok(toW)) return false;
+        int absH = Mathf.Abs(fromH - toH);
+        int absW = Mathf.Abs(fromW - toW);
+        if (absH == 1 && absW == 0 || absH == 0 && absW == 1)
+        {
+            if (board[fromH][fromW] == 0 || board[toH][toW] == 0)
+            {
+                var fromIndex = fromH * N + fromW;
+                var toIndex = toH * N + toW;
+                Debug.Log("from: " + fromIndex);
+                Debug.Log("to: " + toIndex);
+                (board[fromH][fromW], board[toH][toW]) = (board[toH][toW], board[fromH][fromW]);
+                (blocks[fromIndex].transform.position, blocks[toIndex].transform.position) = (blocks[toIndex].transform.position, blocks[fromIndex].transform.position);
+                (blocks[fromIndex], blocks[toIndex]) = (blocks[toIndex], blocks[fromIndex]);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private bool ok(int n)
+    {
+        return 0 <= n && n < N;
     }
 }

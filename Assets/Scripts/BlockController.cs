@@ -77,7 +77,7 @@ public class BlockController : MonoBehaviour
                 floor.VectorToW(mousePosition / scaleRatio));
 
             Debug.Log(transform.localPosition);
-            transform.localPosition = vec;
+            //transform.localPosition = vec;
 
             //var h = floor.VectorToH(transform.localPosition);
             //var w = floor.VectorToW(transform.localPosition);
@@ -85,8 +85,16 @@ public class BlockController : MonoBehaviour
             //var z = transform.localPosition.z;
             ////Debug.Log(string.Format("h={0}, w={1}, x={2}, z={3}", h, w, x, z));
 
+
+            var fromH = floor.VectorToH(transform.localPosition);
+            var fromW = floor.VectorToW(transform.localPosition);
+            var toH = floor.VectorToH(mousePosition / scaleRatio);
+            var toW = floor.VectorToW(mousePosition / scaleRatio);
+            Debug.Log(string.Format("AttemptToMove: {0}, {1}, {2}, {3}", fromH, fromW, toH, toW));
+            if (floor.AttemptToMove(fromH, fromW, toH, toW))
+            {
+                //Debug.Log(string.Format("AttemptToMove: {0}, {1}, {2}, {3}", fromH, fromW, toH, toW));
+            };
         }
-
-
     }
 }
