@@ -12,7 +12,7 @@ public class FloorController : MonoBehaviour
     private const int N = 4;
     private const float floorSize = 10.0f;
     private const float blockSize = floorSize / N;
-    private const int shuffleCount = 1;
+    private const int shuffleCount = 1000;
 
     private List<List<int>> board;
 
