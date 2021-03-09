@@ -29,7 +29,6 @@ public class FloorController : MonoBehaviour
             board.Add(row);
         }
 
-        //transform.gameObject.GetComponent<Transform>().localScale
 
         blocks = new List<GameObject>();
         positions = new List<Vector3>();
@@ -65,9 +64,6 @@ public class FloorController : MonoBehaviour
                 }
             }
         }
-
-        Debug.Log(transform.position);
-        Debug.Log(transform.right);
     }
 
     // Update is called once per frame
@@ -76,24 +72,12 @@ public class FloorController : MonoBehaviour
 
     }
 
-    private void OnMouseDrag()
-    {
-        //Debug.Log("abc");
-        //var mp = Input.mousePosition;
-        //mp.Normalize();
-        //Debug.Log("1: " + mp);
-        //float x = Input.mousePosition.x;
-        //float y = Input.mousePosition.y;
-        //Debug.Log(string.Format("x: {0}, y: {1}", x, y));
-    }
-
     public Vector3 HWToVector(int h, int w)
     {
         var x = w * blockSize + blockSize / 2 - floorSize / 2;
         var z = h * blockSize + blockSize / 2 - floorSize / 2;
         z *= -1;
         var y = .2f;
-        Debug.Log(string.Format("h={0}, w={1}, x={2}, z={3}", h, w, x, z));
         return new Vector3(x, y, z);
     }
 
@@ -119,7 +103,6 @@ public class FloorController : MonoBehaviour
             }
             s += "\n";
         }
-        Debug.Log(s);
 
         if (!ok(fromH) || !ok(fromW) || !ok(toH) || !ok(toW)) return false;
         int absH = Mathf.Abs(fromH - toH);
@@ -130,8 +113,6 @@ public class FloorController : MonoBehaviour
             {
                 var fromIndex = fromH * N + fromW;
                 var toIndex = toH * N + toW;
-                Debug.Log("from: " + fromIndex);
-                Debug.Log("to: " + toIndex);
                 (board[fromH][fromW], board[toH][toW]) = (board[toH][toW], board[fromH][fromW]);
                 (blocks[fromIndex].transform.position, blocks[toIndex].transform.position) = (blocks[toIndex].transform.position, blocks[fromIndex].transform.position);
                 (blocks[fromIndex], blocks[toIndex]) = (blocks[toIndex], blocks[fromIndex]);
