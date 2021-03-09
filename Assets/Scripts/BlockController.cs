@@ -4,8 +4,11 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
+
 public class BlockController : MonoBehaviour
 {
+    public int blockIndex = -1;
+
     private bool isDragging = false;
     private TextMeshPro blockNumber;
 
@@ -15,6 +18,7 @@ public class BlockController : MonoBehaviour
     /// </summary>
     private float scaleRatio;
 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +27,7 @@ public class BlockController : MonoBehaviour
         var num = Vector3.Magnitude(transform.position);
         var den = Vector3.Magnitude(transform.localPosition);
         scaleRatio = den != 0 ? num / den : 1;
+
     }
 
     // Update is called once per frame
@@ -34,13 +39,18 @@ public class BlockController : MonoBehaviour
     private void OnMouseDown()
     {
         isDragging = true;
-        // transform.position = new Vector3(transform.position.x, transform.position.y * 5, transform.position.z);
+        transform.position = new Vector3(transform.position.x, transform.position.y + .1f, transform.position.z);
+
+        var floor = transform.parent.gameObject.GetComponent<FloorController>();
+        var h = blockIndex / 4;
+        var w = blockIndex % 4;
+        Debug.Log(floor.HWToVector(h, w));
     }
 
     private void OnMouseUp()
     {
         isDragging = false;
-        // transform.position = new Vector3(transform.position.x, transform.position.y / 5, transform.position.z);
+        transform.position = new Vector3(transform.position.x, transform.position.y - .1f, transform.position.z);
     }
 
     private void OnMouseDrag()
@@ -55,14 +65,28 @@ public class BlockController : MonoBehaviour
         //Debug.Log(string.Format("pos: x={0}, y={1}, z={2}", mp2.x, mp2.y, mp2.z));
 
 
-        var floor = transform.parent.gameObject.GetComponent<FloorController>();
-
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
             Vector3 mousePosition = hit.point;
-            transform.localPosition = new Vector3(mousePosition.x / scaleRatio, transform.position.y, mousePosition.z / scaleRatio);
+            var floor = transform.parent.gameObject.GetComponent<FloorController>();
+
+            var vec = floor.HWToVector(
+                floor.VectorToH(mousePosition / scaleRatio),
+                floor.VectorToW(mousePosition / scaleRatio));
+
+            Debug.Log(transform.localPosition);
+            transform.localPosition = vec;
+
+            //var h = floor.VectorToH(transform.localPosition);
+            //var w = floor.VectorToW(transform.localPosition);
+            //var x = transform.localPosition.x;
+            //var z = transform.localPosition.z;
+            ////Debug.Log(string.Format("h={0}, w={1}, x={2}, z={3}", h, w, x, z));
+
         }
+
+
     }
 }
