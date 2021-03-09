@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using TMPro;
+using System;
 
 public class FloorController : MonoBehaviour
 {
     private const int N = 4;
     private const float floorSize = 10.0f;
     private const float blockSize = floorSize / N;
+    private const int shuffleCount = 1;
+
     private List<List<int>> board;
 
     private List<GameObject> blocks;
@@ -64,6 +67,9 @@ public class FloorController : MonoBehaviour
                 }
             }
         }
+
+
+        shuffle(shuffleCount);
     }
 
     // Update is called once per frame
@@ -111,11 +117,7 @@ public class FloorController : MonoBehaviour
         {
             if (board[fromH][fromW] == 0 || board[toH][toW] == 0)
             {
-                var fromIndex = fromH * N + fromW;
-                var toIndex = toH * N + toW;
-                (board[fromH][fromW], board[toH][toW]) = (board[toH][toW], board[fromH][fromW]);
-                (blocks[fromIndex].transform.position, blocks[toIndex].transform.position) = (blocks[toIndex].transform.position, blocks[fromIndex].transform.position);
-                (blocks[fromIndex], blocks[toIndex]) = (blocks[toIndex], blocks[fromIndex]);
+                swap(fromH, fromW, toH, toW);
                 return true;
             }
         }
@@ -125,5 +127,50 @@ public class FloorController : MonoBehaviour
     private bool ok(int n)
     {
         return 0 <= n && n < N;
+    }
+
+    private int aaa = 0;
+    private void swap(int fromH, int fromW, int toH, int toW)
+    {
+        aaa += 1;
+        Debug.Log(string.Format("swap {4}: ({0}, {1}) -> ({2}, {3})", fromH, fromW, toH, toW, aaa));
+        var fromIndex = fromH * N + fromW;
+        var toIndex = toH * N + toW;
+        (board[fromH][fromW], board[toH][toW]) = (board[toH][toW], board[fromH][fromW]);
+        (blocks[fromIndex].transform.position, blocks[toIndex].transform.position) = (blocks[toIndex].transform.position, blocks[fromIndex].transform.position);
+        (blocks[fromIndex], blocks[toIndex]) = (blocks[toIndex], blocks[fromIndex]);
+    }
+
+    private void shuffle(int count)
+    {
+        var rand = new System.Random();
+
+        int h = N - 1;
+        int w = N - 1;
+        for (int i = 0; i < count; i++)
+        {
+            var nextH = rand.Next(0, N);
+            var nextW = rand.Next(0, N);
+            // 空白を (nh, nw) に移動させる
+
+            var diffH = Mathf.Abs(h - nextH);
+            var diffW = Mathf.Abs(w - nextW);
+            while (diffH > 0 || diffW > 0)
+            {
+                var ph = h;
+                var pw = w;
+                if (rand.Next(0, diffH + diffW) < diffH)
+                {
+                    if (nextH > h) h++; else h--;
+                }
+                else
+                {
+                    if (nextW > w) w++; else w--;
+                }
+                swap(ph, pw, h, w);
+                diffH = Mathf.Abs(h - nextH);
+                diffW = Mathf.Abs(w - nextW);
+            }
+        }
     }
 }
