@@ -9,7 +9,7 @@ public class FloorController : MonoBehaviour
 {
     public GameObject WinText;
 
-    private const int N = 4;
+    private const int N = 8;
     private const float floorSize = 10.0f;
     private const float blockSize = floorSize / N;
     private const int shuffleCount = 1000;
@@ -40,24 +40,23 @@ public class FloorController : MonoBehaviour
         blocks = new List<GameObject>();
         positions = new List<Vector3>();
 
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            var childObject = transform.GetChild(i).gameObject;
-            if (childObject.CompareTag("Block"))
-            {
-                blocks.Add(childObject);
-            }
-        }
-
-        for (int i = 0; i < blocks.Count(); i++)
+        GameObject blockPrefab = Resources.Load<GameObject>("Prefabs/Block");
+        for (int i = 0; i < N * N; i++)
         {
             var num = (i + 1) % (N * N);
+            var h = i / N;
+            var w = i % N;
 
-            var block = blocks[i];
+            var block = Instantiate<GameObject>(blockPrefab, this.transform);
+            block.transform.localScale = new Vector3(blockSize - .1f, .1f, blockSize - .1f);
+            blocks.Add(block);
+
             var blockNumber = block.transform.Find("Block Number").GetComponent<TextMeshPro>();
             blockNumber.text = num > 0 ? num.ToString() : "";
 
-            positions.Add(new Vector3(block.transform.localPosition.x, block.transform.localPosition.y, block.transform.localPosition.z));
+            var pos = this.HWToVector(h, w);
+            block.transform.localPosition = pos;
+            positions.Add(pos);
 
             block.GetComponent<BlockController>().blockIndex = i;
 
@@ -104,16 +103,6 @@ public class FloorController : MonoBehaviour
 
     public bool AttemptToMove(int fromH, int fromW, int toH, int toW)
     {
-        string s = "";
-        for (int i = 0; i < N; i++)
-        {
-            for (int j = 0; j < N; j++)
-            {
-                s += board[i][j].ToString() + ",";
-            }
-            s += "\n";
-        }
-
         if (!ok(fromH) || !ok(fromW) || !ok(toH) || !ok(toW)) return false;
         int absH = Mathf.Abs(fromH - toH);
         int absW = Mathf.Abs(fromW - toW);

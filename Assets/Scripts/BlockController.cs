@@ -55,7 +55,6 @@ public class BlockController : MonoBehaviour
 
     private void OnMouseDrag()
     {
-
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
