@@ -9,9 +9,6 @@ public class BlockController : MonoBehaviour
 {
     public int blockIndex = -1;
 
-    private bool isDragging = false;
-    private TextMeshPro blockNumber;
-
     /// <summary>
     /// localPosition = position / scaleRatio
     /// position = localPosition * scaleRatio
@@ -22,8 +19,6 @@ public class BlockController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        blockNumber = transform.Find("Block Number").GetComponent<TextMeshPro>();
-
         var num = Vector3.Magnitude(transform.position);
         var den = Vector3.Magnitude(transform.localPosition);
         scaleRatio = den != 0 ? num / den : 1;
@@ -38,7 +33,6 @@ public class BlockController : MonoBehaviour
 
     private void OnMouseDown()
     {
-        isDragging = true;
         transform.position = new Vector3(transform.position.x, transform.position.y + .1f, transform.position.z);
 
         var floor = transform.parent.gameObject.GetComponent<FloorController>();
@@ -49,7 +43,6 @@ public class BlockController : MonoBehaviour
 
     private void OnMouseUp()
     {
-        isDragging = false;
         transform.position = new Vector3(transform.position.x, transform.position.y - .1f, transform.position.z);
     }
 
@@ -68,8 +61,8 @@ public class BlockController : MonoBehaviour
             var toW = floor.VectorToW(mousePosition / scaleRatio);
 
             Debug.Log(string.Format("AttemptToMove: {0}, {1}, {2}, {3}", fromH, fromW, toH, toW));
-            var res = floor.AttemptToMove(fromH, fromW, toH, toW);
-            if (res)
+            var win = floor.AttemptToMove(fromH, fromW, toH, toW);
+            if (win)
             {
                 floor.DisplayTextIfWin();
             }
